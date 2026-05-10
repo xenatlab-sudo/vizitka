@@ -4,386 +4,423 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Lammer | Стеклянная визитка</title>
+    <meta name="description" content="Связь со мной: VK, Telegram, MAX. Нажми на карточку, чтобы скопировать ссылку или ник.">
     <meta property="og:title" content="Lammer | Мои контакты">
-    <meta property="og:description" content="Нажми на карточку, чтобы скопировать ссылку или ник">
+    <meta property="og:description" content="Стеклянная визитка с анимациями и QR-кодами">
+    <meta property="og:type" content="website">
     <style>
+        /* ----- RESET & БАЗА ----- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px 20px;
-            transition: background 0.6s ease, color 0.3s ease;
+            padding: 2rem 1.5rem;
+            transition: background 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1), color 0.3s;
             position: relative;
         }
 
-        /* ДНЕВНАЯ ТЕМА — утреннее поле */
-        body.day {
-            background: linear-gradient(145deg, #f9e7b3 0%, #c8e6b5 50%, #9bc48a 100%);
-            color: #2c3e2f;
-        }
-        body.day::before {
-            content: "🌾";
-            font-size: 180px;
+        /* ----- ПЛАВНЫЙ ФОН (анимированный градиент) ----- */
+        body::before {
+            content: '';
             position: fixed;
-            bottom: 0;
-            left: -40px;
-            opacity: 0.2;
-            pointer-events: none;
-            transform: rotate(15deg);
-        }
-        body.day::after {
-            content: "☀️";
-            font-size: 140px;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            opacity: 0.3;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            transition: opacity 0.8s;
         }
 
-        /* НОЧНАЯ ТЕМА — звёздное небо (без комет) */
-        body.night {
-            background: radial-gradient(ellipse at 30% 40%, #0a0f2a, #02030c);
-            color: #eef;
+        body.day::before {
+            background: linear-gradient(125deg, #fef3c7, #dcfce7, #bbf0d0);
+            background-size: 200% 200%;
+            animation: gradientShift 20s ease infinite alternate;
         }
+
         body.night::before {
-            content: "🌙";
-            font-size: 110px;
-            position: fixed;
-            top: 20px;
-            right: 30px;
-            opacity: 0.6;
-            pointer-events: none;
+            background: radial-gradient(ellipse at 40% 45%, #0b1120, #03050b);
+            background-size: 200% 200%;
+            animation: gradientShiftNight 18s ease infinite alternate;
         }
-        .star-bg {
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 30%; }
+            100% { background-position: 100% 70%; }
+        }
+        @keyframes gradientShiftNight {
+            0% { background-position: 10% 20%; }
+            100% { background-position: 90% 80%; }
+        }
+
+        /* Декоративные элементы фона (день — поле, ночь — звёзды) */
+        body.day .field-deco {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 180px;
+            background: repeating-linear-gradient(transparent, transparent 38px, rgba(160, 200, 100, 0.2) 38px, rgba(210, 180, 100, 0.1) 45px);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body.day .sun-deco {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            font-size: 100px;
+            opacity: 0.3;
+            filter: blur(2px);
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        body.night .stars-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
+            z-index: -1;
         }
-        .star-bg i {
+
+        .star {
             position: absolute;
-            background: white;
+            background-color: #fff;
             border-radius: 50%;
-            animation: twinkle 2s infinite alternate;
+            opacity: 0.6;
+            animation: twinkle 3s infinite alternate;
         }
+
         @keyframes twinkle {
-            0% { opacity: 0.3; transform: scale(1);}
+            0% { opacity: 0.2; transform: scale(1);}
             100% { opacity: 1; transform: scale(1.2);}
         }
 
-        /* Стили карточек в разных темах */
-        body.night .glass-card {
-            background: rgba(15, 20, 45, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.27);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-        }
-        body.night .social-name {
-            background: linear-gradient(135deg, #fff, #b0b0ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        body.day .glass-card {
-            background: rgba(245, 255, 235, 0.4);
-            border: 1px solid rgba(255, 250, 210, 0.9);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        body.day .social-name {
-            color: #2d4a22;
-            text-shadow: 0 1px 2px rgba(255,255,180,0.8);
-        }
-
-        /* Переключатель темы */
+        /* ----- ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ (аккуратный) ----- */
         .theme-switch {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1001;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
+            z-index: 100;
+            background: rgba(20, 20, 40, 0.5);
+            backdrop-filter: blur(12px);
             border-radius: 60px;
             padding: 10px 20px;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.3);
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.9rem;
             color: white;
-            transition: 0.2s;
-            font-size: 14px;
+            transition: all 0.2s;
+            font-family: inherit;
         }
         .theme-switch:hover {
-            transform: scale(1.03);
+            transform: scale(1.02);
             background: rgba(0,0,0,0.6);
         }
 
-        /* Контейнер карточек */
+        /* ----- КОНТЕЙНЕР КАРТОЧЕК ----- */
         .cards-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 40px;
-            max-width: 1400px;
-            margin: 30px auto;
+            gap: 2rem;
+            max-width: 1300px;
+            margin: 1rem auto;
             position: relative;
             z-index: 5;
         }
 
-        /* Стеклянная карточка */
+        /* ----- СТЕКЛЯННАЯ КАРТОЧКА ----- */
         .glass-card {
-            width: 320px;
-            padding: 30px 20px 30px 20px;
-            border-radius: 52px;
-            backdrop-filter: blur(16px);
+            width: 310px;
+            padding: 1.8rem 1.2rem 1.8rem 1.2rem;
+            border-radius: 56px;
+            backdrop-filter: blur(18px);
             text-align: center;
             cursor: pointer;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.4, 1.1);
             transform: translateY(40px);
             opacity: 0;
-            animation: slideUp 0.5s forwards;
+            animation: slideUpCard 0.6s forwards;
+            will-change: transform, box-shadow;
         }
+
         .glass-card:nth-child(1) { animation-delay: 0.05s; }
-        .glass-card:nth-child(2) { animation-delay: 0.15s; }
-        .glass-card:nth-child(3) { animation-delay: 0.25s; }
+        .glass-card:nth-child(2) { animation-delay: 0.18s; }
+        .glass-card:nth-child(3) { animation-delay: 0.31s; }
 
-        @keyframes slideUp {
-            to { transform: translateY(0); opacity: 1; }
+        @keyframes slideUpCard {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-        /* Увеличение при наведении */
+        /* Эффект при наведении (увеличение + подъем) */
         .glass-card:hover {
-            transform: scale(1.05) translateY(-8px);
+            transform: scale(1.04) translateY(-6px);
             transition: transform 0.25s ease;
         }
 
-        /* Индивидуальные обводки */
+        /* Индивидуальные градиентные тени (неон) */
         .glass-card[data-social="vk"] {
-            border-left: 3px solid #4a90e2;
-            border-right: 1px solid rgba(255,215,0,0.5);
+            box-shadow: 0 20px 35px -10px rgba(74,144,226,0.4), 0 0 0 1px rgba(74,144,226,0.2);
         }
         .glass-card[data-social="tg"] {
-            border-left: 3px solid #00d4ff;
-            border-right: 1px solid rgba(0,119,255,0.5);
+            box-shadow: 0 20px 35px -10px rgba(0,212,255,0.4), 0 0 0 1px rgba(0,212,255,0.2);
         }
         .glass-card[data-social="max"] {
-            border-left: 3px solid #ff4500;
-            border-right: 1px solid rgba(255,0,100,0.5);
+            box-shadow: 0 20px 35px -10px rgba(255,68,0,0.4), 0 0 0 1px rgba(255,68,0,0.2);
         }
 
+        /* Свечение при клике (яркое) */
         .glass-card.glow {
-            transition: 0.07s linear;
+            transition: 0.08s;
         }
         .glass-card[data-social="vk"].glow {
             box-shadow: 0 0 35px #ffb347, 0 0 18px #4a90e2;
         }
         .glass-card[data-social="tg"].glow {
-            box-shadow: 0 0 35px #00d4ff, 0 0 18px #0077ff;
+            box-shadow: 0 0 40px #00d4ff, 0 0 20px #0077ff;
         }
         .glass-card[data-social="max"].glow {
-            box-shadow: 0 0 40px #ff3300, 0 0 20px #ff0066;
+            box-shadow: 0 0 45px #ff3300, 0 0 22px #ff0066;
         }
 
+        /* QR-код с пульсацией при загрузке */
         .qr-code {
-            width: 160px;
-            height: 160px;
-            margin: 0 auto 20px;
-            background: white;
-            border-radius: 28px;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 32px;
             padding: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 12px 25px -8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            animation: qrGlowPulse 0.7s ease-out 0.5s 1;
+        }
+        @keyframes qrGlowPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,210,0.7);}
+            50% { transform: scale(1.01); box-shadow: 0 0 0 10px rgba(255,255,210,0.3);}
+            100% { transform: scale(1); box-shadow: 0 12px 25px -8px rgba(0,0,0,0.2);}
         }
         .qr-code img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            display: block;
+            border-radius: 20px;
         }
 
+        /* Иконка соцсети (текст с лёгкой анимацией при ховере) */
         .social-name {
-            font-size: 28px;
+            font-size: 1.9rem;
             font-weight: 700;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
+            margin-bottom: 0.8rem;
+            letter-spacing: -0.3px;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .glass-card:hover .social-name {
+            animation: gentleWobble 0.35s ease;
+        }
+        @keyframes gentleWobble {
+            0%,100% { transform: translateX(0); }
+            30% { transform: translateX(-2px); }
+            70% { transform: translateX(2px); }
         }
 
+        /* Блок копирования */
         .copy-area {
             margin-top: 20px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 60px;
-            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 48px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(4px);
+            transition: background 0.2s;
         }
         .copy-text {
-            font-size: 13px;
+            font-size: 0.8rem;
             font-weight: 500;
             word-break: break-all;
             flex: 1;
             text-align: left;
             color: inherit;
+            opacity: 0.9;
         }
         .copy-btn {
-            background: white;
+            background: rgba(255,255,255,0.9);
             border: none;
             border-radius: 40px;
             padding: 6px 14px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 0.75rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.15s;
             color: #111;
+            font-family: inherit;
         }
         .copy-btn:hover {
             transform: scale(1.03);
-            background: #f8f8f8;
+            background: white;
         }
 
-        /* Кнопка сохранить контакты */
-        .download-btn {
-            background: rgba(0,0,0,0.3);
+        /* ПОЧТОВЫЙ БЛОК (эргономичный) */
+        .email-card {
+            margin-top: 3rem;
+            background: rgba(0, 0, 0, 0.25);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.5);
-            padding: 12px 28px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: 0.2s;
-            color: inherit;
-            z-index: 10;
-        }
-        .download-btn:hover {
-            background: rgba(0,0,0,0.45);
-            transform: scale(1.02);
-        }
-
-        /* Блок с почтой */
-        .email-block {
-            margin-top: 30px;
-            margin-bottom: 20px;
-            font-size: 16px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(8px);
-            padding: 12px 24px;
-            border-radius: 60px;
+            border-radius: 80px;
+            padding: 0.8rem 1.8rem;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            border: 1px solid rgba(255,255,255,0.4);
-            transition: 0.2s;
+            gap: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             cursor: pointer;
+            transition: all 0.2s;
+            z-index: 5;
         }
-        .email-block:hover {
-            background: rgba(255,255,255,0.3);
+        .email-card:hover {
             transform: scale(1.01);
+            background: rgba(0, 0, 0, 0.35);
         }
         .email-icon {
             font-size: 1.4rem;
         }
         .email-address {
+            font-size: 1rem;
             font-weight: 500;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
+        }
+        .copy-email-btn {
+            background: white;
+            border: none;
+            border-radius: 40px;
+            padding: 5px 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .copy-email-btn:hover {
+            transform: scale(1.02);
         }
 
-        /* Уведомление */
-        .toast {
+        /* УВЕДОМЛЕНИЕ (тост) */
+        .toast-message {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: #1f1f2eef;
-            backdrop-filter: blur(12px);
+            background: #1e1e2cd9;
+            backdrop-filter: blur(16px);
             color: white;
-            padding: 12px 24px;
+            padding: 10px 24px;
             border-radius: 60px;
-            font-size: 14px;
+            font-size: 0.85rem;
             z-index: 2000;
             opacity: 0;
             transition: 0.2s;
             pointer-events: none;
             font-weight: 500;
+            white-space: nowrap;
+            max-width: 90vw;
+            white-space: normal;
+            text-align: center;
         }
 
-        /* Анимационные элементы */
-        .cloud-anim {
+        /* АНИМАЦИОННЫЕ ЭЛЕМЕНТЫ (облака, самолёты, звезды, ленты) */
+        .anim-cloud {
             position: fixed;
-            font-size: 38px;
+            font-size: 2.4rem;
             pointer-events: none;
-            z-index: 2000;
-            animation: cloudFloat 0.9s ease-out forwards;
+            z-index: 1000;
+            animation: floatCloud 0.85s ease-out forwards;
         }
-        @keyframes cloudFloat {
-            0% { transform: scale(0.4) translate(0,0); opacity: 1; }
-            100% { transform: scale(1.3) translate(var(--dx), var(--dy)); opacity: 0; }
+        @keyframes floatCloud {
+            0% { transform: scale(0.5) translate(0,0); opacity: 1; }
+            100% { transform: scale(1.4) translate(var(--dx), var(--dy)); opacity: 0; }
         }
 
-        .plane-anim {
+        .anim-plane {
             position: fixed;
-            font-size: 32px;
+            font-size: 2rem;
             pointer-events: none;
-            z-index: 2000;
-            animation: flyAnim 1s ease-out forwards;
+            z-index: 1000;
+            animation: flyPlane 0.95s ease-out forwards;
         }
-        @keyframes flyAnim {
+        @keyframes flyPlane {
             0% { transform: translate(0,0) rotate(0deg); opacity: 1; }
             100% { transform: translate(var(--dx), var(--dy)) rotate(720deg); opacity: 0; }
         }
 
-        .star-red-anim {
+        .anim-star-red {
             position: fixed;
-            font-size: 32px;
+            font-size: 2rem;
             pointer-events: none;
-            z-index: 2000;
-            animation: starRiseAnim 0.9s ease-out forwards;
+            z-index: 1000;
+            animation: riseStar 0.85s ease-out forwards;
         }
-        .ribbon-anim {
+        .anim-ribbon {
             position: fixed;
-            font-size: 30px;
+            font-size: 1.9rem;
             pointer-events: none;
-            z-index: 2000;
-            animation: ribbonSpin 0.9s ease-out forwards;
+            z-index: 1000;
+            animation: spinRibbon 0.9s ease-out forwards;
         }
-        @keyframes starRiseAnim {
+        @keyframes riseStar {
             0% { transform: scale(0.2) translate(0,0); opacity: 1; }
-            100% { transform: scale(1.5) translate(var(--dx), var(--dy)); opacity: 0; }
+            100% { transform: scale(1.6) translate(var(--dx), var(--dy)); opacity: 0; }
         }
-        @keyframes ribbonSpin {
-            0% { transform: rotate(0deg) scale(0.5); opacity: 1; }
-            100% { transform: rotate(400deg) scale(1.4) translate(var(--dx), var(--dy)); opacity: 0; }
+        @keyframes spinRibbon {
+            0% { transform: rotate(0deg) scale(0.4); opacity: 1; }
+            100% { transform: rotate(380deg) scale(1.5) translate(var(--dx), var(--dy)); opacity: 0; }
         }
 
-        /* Адаптив */
-        @media (max-width: 700px) {
-            .glass-card { width: 280px; padding: 20px 15px; }
-            .qr-code { width: 140px; height: 140px; }
-            .social-name { font-size: 24px; }
+        /* АДАПТИВНОСТЬ */
+        @media (max-width: 720px) {
+            .glass-card { width: 280px; padding: 1.4rem 1rem; }
+            .qr-code { width: 130px; height: 130px; }
+            .social-name { font-size: 1.6rem; }
+            .email-address { font-size: 0.85rem; }
+            .theme-switch { padding: 6px 14px; font-size: 0.8rem; top: 12px; right: 12px; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 1.5rem 1rem; }
+            .cards-container { gap: 1.2rem; }
         }
     </style>
 </head>
 <body class="day">
-    <div class="theme-switch" id="themeToggle">🌙 Ночь</div>
-    <div id="starContainer" class="star-bg"></div>
+    <!-- Декоративные элементы фона (день) -->
+    <div class="field-deco"></div>
+    <div class="sun-deco">☀️</div>
+    <div class="stars-container" id="starsContainer"></div>
+
+    <div class="theme-switch" id="themeToggle">🌙 Ночная тема</div>
 
     <div class="cards-container">
-        <!-- VK -->
+        <!-- VK карточка -->
         <div class="glass-card" data-social="vk" data-copy-text="https://vk.com/lammerx">
             <div class="qr-code">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://vk.com/lammerx" alt="QR VK">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://vk.com/lammerx" alt="QR VK">
             </div>
             <div class="social-name">VK</div>
             <div class="copy-area">
@@ -392,10 +429,10 @@
             </div>
         </div>
 
-        <!-- Telegram -->
+        <!-- Telegram карточка -->
         <div class="glass-card" data-social="tg" data-copy-text="@LammerLS">
             <div class="qr-code">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://t.me/LammerLS" alt="QR TG">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://t.me/LammerLS" alt="QR Telegram">
             </div>
             <div class="social-name">Telegram</div>
             <div class="copy-area">
@@ -404,10 +441,10 @@
             </div>
         </div>
 
-        <!-- MAX -->
+        <!-- MAX карточка -->
         <div class="glass-card" data-social="max" data-copy-text="https://max.ru/u/f9LHodD0cOJhMH1ud9LkqAebsd03sgC9kgr1Wto3dF0lhatlWBx4vpEodU0">
             <div class="qr-code">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://max.ru/u/f9LHodD0cOJhMH1ud9LkqAebsd03sgC9kgr1Wto3dF0lhatlWBx4vpEodU0" alt="QR MAX">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://max.ru/u/f9LHodD0cOJhMH1ud9LkqAebsd03sgC9kgr1Wto3dF0lhatlWBx4vpEodU0" alt="QR MAX">
             </div>
             <div class="social-name">MAX</div>
             <div class="copy-area">
@@ -417,242 +454,274 @@
         </div>
     </div>
 
-    <button class="download-btn" id="downloadBtn">📎 Сохранить контакты (vCard)</button>
-
-    <!-- Почта с возможностью копирования -->
-    <div class="email-block" id="emailBlock">
+    <!-- Почтовый блок -->
+    <div class="email-card" id="emailCard">
         <span class="email-icon">✉️</span>
         <span class="email-address">lammer146@gmail.com</span>
-        <span class="copy-hint" style="font-size:12px; opacity:0.7;">(нажми, чтобы скопировать)</span>
+        <button class="copy-email-btn" id="copyEmailBtn">Копировать</button>
     </div>
 
-    <div id="toast" class="toast">✅ Скопировано!</div>
+    <div id="toastMsg" class="toast-message">✅ Скопировано</div>
 
     <script>
-        // Звук
-        let audioCtx = null;
-        function playPop() {
-            try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = 880;
-                gain.gain.value = 0.12;
-                osc.type = 'sine';
-                osc.start();
-                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.25);
-                osc.stop(audioCtx.currentTime + 0.25);
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-            } catch(e) { console.log("audio error"); }
-        }
-
-        // Анимации
-        function animateClouds(cx, cy) {
-            for (let i = 0; i < 8; i++) {
-                const cloud = document.createElement('div');
-                cloud.className = 'cloud-anim';
-                cloud.textContent = ['☁️','🌥️','☁️','💨'][Math.floor(Math.random()*4)];
-                const angle = Math.random() * Math.PI * 2;
-                const dist = 70 + Math.random() * 130;
-                const dx = Math.cos(angle) * dist - 40;
-                const dy = Math.sin(angle) * dist - 60;
-                cloud.style.left = (cx - 30 + (Math.random()-0.5)*60) + 'px';
-                cloud.style.top = (cy - 30 + (Math.random()-0.5)*60) + 'px';
-                cloud.style.setProperty('--dx', dx + 'px');
-                cloud.style.setProperty('--dy', dy + 'px');
-                document.body.appendChild(cloud);
-                setTimeout(() => cloud.remove(), 900);
-            }
-        }
-
-        function animatePlanes(cx, cy) {
-            for (let i = 0; i < 10; i++) {
-                const plane = document.createElement('div');
-                plane.className = 'plane-anim';
-                plane.textContent = '✈️';
-                const angle = Math.random() * Math.PI * 2;
-                const dist = 100 + Math.random() * 150;
-                const dx = Math.cos(angle) * dist;
-                const dy = Math.sin(angle) * dist - 70;
-                plane.style.left = (cx - 18) + 'px';
-                plane.style.top = (cy - 18) + 'px';
-                plane.style.setProperty('--dx', dx + 'px');
-                plane.style.setProperty('--dy', dy + 'px');
-                document.body.appendChild(plane);
-                setTimeout(() => plane.remove(), 1000);
-            }
-        }
-
-        function animateVictory(cx, cy) {
-            for (let i = 0; i < 12; i++) {
-                const star = document.createElement('div');
-                star.className = 'star-red-anim';
-                star.textContent = '⭐';
-                star.style.color = '#e33';
-                const angle = Math.random() * Math.PI * 2;
-                const dist = 70 + Math.random() * 140;
-                const dx = Math.cos(angle) * dist;
-                const dy = Math.sin(angle) * dist - 55;
-                star.style.left = (cx - 20) + 'px';
-                star.style.top = (cy - 20) + 'px';
-                star.style.setProperty('--dx', dx + 'px');
-                star.style.setProperty('--dy', dy + 'px');
-                document.body.appendChild(star);
-                setTimeout(() => star.remove(), 850);
-            }
-            for (let i = 0; i < 6; i++) {
-                const rib = document.createElement('div');
-                rib.className = 'ribbon-anim';
-                rib.textContent = '🎗️';
-                const angle = Math.random() * Math.PI * 2;
-                const dist = 90 + Math.random() * 130;
-                const dx = Math.cos(angle) * dist;
-                const dy = Math.sin(angle) * dist - 65;
-                rib.style.left = (cx - 22) + 'px';
-                rib.style.top = (cy - 22) + 'px';
-                rib.style.setProperty('--dx', dx + 'px');
-                rib.style.setProperty('--dy', dy + 'px');
-                document.body.appendChild(rib);
-                setTimeout(() => rib.remove(), 950);
-            }
-        }
-
-        async function copyTextWithEffects(text, social, element) {
-            try {
-                await navigator.clipboard.writeText(text);
-                const toast = document.getElementById('toast');
-                toast.textContent = `✅ Скопировано: ${text.substring(0, 35)}${text.length>35?'…':''}`;
-                toast.style.opacity = '1';
-                setTimeout(() => toast.style.opacity = '0', 1800);
-                playPop();
-
-                const card = element.closest('.glass-card');
-                if (card) {
-                    card.classList.add('glow');
-                    setTimeout(() => card.classList.remove('glow'), 300);
-                    const rect = card.getBoundingClientRect();
-                    const cx = rect.left + rect.width/2;
-                    const cy = rect.top + rect.height/2;
-                    if (social === 'vk') animateClouds(cx, cy);
-                    else if (social === 'tg') animatePlanes(cx, cy);
-                    else if (social === 'max') animateVictory(cx, cy);
-                } else {
-                    // если клик по почте (отдельный обработчик)
-                    const emailBlock = document.getElementById('emailBlock');
-                    if (element === emailBlock || element.closest('.email-block')) {
-                        // легкое свечение
-                        emailBlock.style.transform = 'scale(1.02)';
-                        setTimeout(() => emailBlock.style.transform = '', 200);
+        (function() {
+            // ---------- ЗВУК (короткий "пип") ----------
+            let audioCtx = null;
+            function playBeep() {
+                try {
+                    if (!audioCtx) {
+                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                     }
-                }
-            } catch(err) {
-                document.getElementById('toast').textContent = '❌ Ошибка копирования';
-                setTimeout(() => document.getElementById('toast').style.opacity = '0', 1500);
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.frequency.value = 960;
+                    gain.gain.value = 0.1;
+                    osc.type = 'sine';
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.25);
+                    osc.stop(audioCtx.currentTime + 0.25);
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                } catch(e) { /* fallback: без звука */ }
             }
-        }
 
-        // Сохранение контактов
-        function downloadVCard() {
-            const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN:Lammer
-EMAIL:lammer146@gmail.com
-X-SOCIALPROFILE;type=VK:https://vk.com/lammerx
-X-SOCIALPROFILE;type=Telegram:@LammerLS
-X-SOCIALPROFILE;type=MAX:https://max.ru/u/f9LHodD0cOJhMH1ud9LkqAebsd03sgC9kgr1Wto3dF0lhatlWBx4vpEodU0
-END:VCARD`;
-            const blob = new Blob([vcard], {type: 'text/vcard'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'lammer_contacts.vcf';
-            link.click();
-            URL.revokeObjectURL(link.href);
-            const toast = document.getElementById('toast');
-            toast.textContent = '📇 Контакты сохранены';
-            toast.style.opacity = '1';
-            setTimeout(() => toast.style.opacity = '0', 1500);
-        }
-
-        // Тема день/ночь (без комет)
-        function addStars() {
-            const container = document.getElementById('starContainer');
-            container.innerHTML = '';
-            const starCount = 120;
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('i');
-                const size = 1 + Math.random() * 3;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDuration = 1 + Math.random() * 3 + 's';
-                star.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(star);
-            }
-        }
-
-        const themeToggle = document.getElementById('themeToggle');
-        themeToggle.addEventListener('click', () => {
-            const body = document.body;
-            if (body.classList.contains('day')) {
-                body.classList.remove('day');
-                body.classList.add('night');
-                themeToggle.innerHTML = '☀️ День';
-                addStars();
-            } else {
-                body.classList.remove('night');
-                body.classList.add('day');
-                themeToggle.innerHTML = '🌙 Ночь';
-                document.getElementById('starContainer').innerHTML = '';
-            }
-        });
-
-        if (document.body.classList.contains('night')) addStars();
-
-        // Обработчики карточек и почты
-        document.querySelectorAll('.glass-card').forEach(card => {
-            const btn = card.querySelector('.copy-btn');
-            const text = card.getAttribute('data-copy-text');
-            const social = card.getAttribute('data-social');
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                copyTextWithEffects(text, social, card);
-            });
-            card.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('copy-btn')) {
-                    copyTextWithEffects(text, social, card);
-                }
-            });
-        });
-
-        const emailBlock = document.getElementById('emailBlock');
-        const emailAddress = 'lammer146@gmail.com';
-        emailBlock.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            try {
-                await navigator.clipboard.writeText(emailAddress);
-                const toast = document.getElementById('toast');
-                toast.textContent = `✉️ Почта скопирована: ${emailAddress}`;
+            // ---------- УВЕДОМЛЕНИЕ ----------
+            const toast = document.getElementById('toastMsg');
+            function showToast(text, isError = false) {
+                toast.textContent = isError ? '❌ ' + text : '✅ ' + text;
                 toast.style.opacity = '1';
-                setTimeout(() => toast.style.opacity = '0', 1800);
-                playPop();
-                emailBlock.style.transform = 'scale(1.02)';
-                setTimeout(() => emailBlock.style.transform = '', 200);
-            } catch(err) {
-                document.getElementById('toast').textContent = '❌ Ошибка копирования';
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                }, 2000);
             }
-        });
 
-        document.getElementById('downloadBtn').addEventListener('click', downloadVCard);
+            // ---------- АНИМАЦИИ ----------
+            // Облачка для VK (8 штук)
+            function spawnClouds(x, y) {
+                const cloudVariants = ['☁️', '🌥️', '☁️', '💨'];
+                for (let i = 0; i < 8; i++) {
+                    const cloud = document.createElement('div');
+                    cloud.className = 'anim-cloud';
+                    cloud.textContent = cloudVariants[Math.floor(Math.random() * cloudVariants.length)];
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 70 + Math.random() * 130;
+                    const dx = Math.cos(angle) * dist - 35;
+                    const dy = Math.sin(angle) * dist - 55;
+                    cloud.style.left = (x - 25 + (Math.random() - 0.5) * 60) + 'px';
+                    cloud.style.top = (y - 25 + (Math.random() - 0.5) * 60) + 'px';
+                    cloud.style.setProperty('--dx', dx + 'px');
+                    cloud.style.setProperty('--dy', dy + 'px');
+                    document.body.appendChild(cloud);
+                    setTimeout(() => cloud.remove(), 850);
+                }
+            }
 
-        // Активация звука после первого клика
-        document.body.addEventListener('click', () => {
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        }, { once: true });
+            // 10 бумажных самолётиков для Telegram
+            function spawnPlanes(x, y) {
+                for (let i = 0; i < 10; i++) {
+                    const plane = document.createElement('div');
+                    plane.className = 'anim-plane';
+                    plane.textContent = '✈️';
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 100 + Math.random() * 160;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist - 70;
+                    plane.style.left = (x - 18) + 'px';
+                    plane.style.top = (y - 18) + 'px';
+                    plane.style.setProperty('--dx', dx + 'px');
+                    plane.style.setProperty('--dy', dy + 'px');
+                    document.body.appendChild(plane);
+                    setTimeout(() => plane.remove(), 1000);
+                }
+            }
+
+            // Звёзды (12) + ленточки (6) для MAX (9 мая стиль)
+            function spawnVictory(x, y) {
+                for (let i = 0; i < 12; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'anim-star-red';
+                    star.textContent = '⭐';
+                    star.style.color = '#e33';
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 70 + Math.random() * 140;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist - 50;
+                    star.style.left = (x - 20) + 'px';
+                    star.style.top = (y - 20) + 'px';
+                    star.style.setProperty('--dx', dx + 'px');
+                    star.style.setProperty('--dy', dy + 'px');
+                    document.body.appendChild(star);
+                    setTimeout(() => star.remove(), 850);
+                }
+                for (let i = 0; i < 6; i++) {
+                    const ribbon = document.createElement('div');
+                    ribbon.className = 'anim-ribbon';
+                    ribbon.textContent = '🎗️';
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 90 + Math.random() * 135;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist - 60;
+                    ribbon.style.left = (x - 22) + 'px';
+                    ribbon.style.top = (y - 22) + 'px';
+                    ribbon.style.setProperty('--dx', dx + 'px');
+                    ribbon.style.setProperty('--dy', dy + 'px');
+                    document.body.appendChild(ribbon);
+                    setTimeout(() => ribbon.remove(), 950);
+                }
+            }
+
+            // ---------- ОСНОВНАЯ ФУНКЦИЯ КОПИРОВАНИЯ ----------
+            async function copyWithEffects(text, social, cardElement) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    showToast(`Скопировано: ${text.length > 35 ? text.substring(0, 32) + '…' : text}`);
+                    playBeep();
+
+                    // Свечение карточки
+                    cardElement.classList.add('glow');
+                    setTimeout(() => cardElement.classList.remove('glow'), 280);
+
+                    // Координаты центра карточки для частиц
+                    const rect = cardElement.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    // Выбор анимации в зависимости от соцсети
+                    if (social === 'vk') {
+                        spawnClouds(centerX, centerY);
+                    } else if (social === 'tg') {
+                        spawnPlanes(centerX, centerY);
+                    } else if (social === 'max') {
+                        spawnVictory(centerX, centerY);
+                    }
+                } catch (err) {
+                    showToast('Ошибка копирования. Попробуйте вручную.', true);
+                }
+            }
+
+            // ---------- КОПИРОВАНИЕ ПОЧТЫ ----------
+            async function copyEmailFunc() {
+                const email = "lammer146@gmail.com";
+                try {
+                    await navigator.clipboard.writeText(email);
+                    showToast(`Почта скопирована: ${email}`);
+                    playBeep();
+                    const emailBlock = document.getElementById('emailCard');
+                    emailBlock.style.transform = 'scale(1.02)';
+                    setTimeout(() => { if(emailBlock) emailBlock.style.transform = ''; }, 200);
+                } catch(e) {
+                    showToast('Не удалось скопировать почту', true);
+                }
+            }
+
+            // ---------- ПЕРЕКЛЮЧЕНИЕ ТЕМЫ ДЕНЬ/НОЧЬ (без комет, только звёзды) ----------
+            function generateStars() {
+                const container = document.getElementById('starsContainer');
+                if (!container) return;
+                container.innerHTML = '';
+                const starCount = 140;
+                for (let i = 0; i < starCount; i++) {
+                    const star = document.createElement('div');
+                    star.classList.add('star');
+                    const size = 1 + Math.random() * 3;
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.animationDuration = 1 + Math.random() * 4 + 's';
+                    star.style.animationDelay = Math.random() * 5 + 's';
+                    star.style.opacity = 0.4 + Math.random() * 0.5;
+                    container.appendChild(star);
+                }
+            }
+
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            const starsContainerDiv = document.getElementById('starsContainer');
+            const sunDeco = document.querySelector('.sun-deco');
+            const fieldDeco = document.querySelector('.field-deco');
+
+            function setTheme(theme) {
+                if (theme === 'night') {
+                    body.classList.remove('day');
+                    body.classList.add('night');
+                    themeToggle.innerHTML = '☀️ Дневная тема';
+                    if (starsContainerDiv) starsContainerDiv.style.display = 'block';
+                    generateStars();
+                    if (sunDeco) sunDeco.style.opacity = '0';
+                    if (fieldDeco) fieldDeco.style.opacity = '0';
+                } else {
+                    body.classList.remove('night');
+                    body.classList.add('day');
+                    themeToggle.innerHTML = '🌙 Ночная тема';
+                    if (starsContainerDiv) starsContainerDiv.style.display = 'none';
+                    if (sunDeco) sunDeco.style.opacity = '0.3';
+                    if (fieldDeco) fieldDeco.style.opacity = '1';
+                }
+            }
+
+            themeToggle.addEventListener('click', () => {
+                if (body.classList.contains('day')) {
+                    setTheme('night');
+                } else {
+                    setTheme('day');
+                }
+            });
+
+            // Инициализация: дневная тема по умолчанию, звёзды скрыты
+            setTheme('day');
+
+            // ---------- НАЗНАЧЕНИЕ ОБРАБОТЧИКОВ НА КАРТОЧКИ ----------
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach(card => {
+                const copyBtn = card.querySelector('.copy-btn');
+                const textToCopy = card.getAttribute('data-copy-text');
+                const social = card.getAttribute('data-social');
+
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        copyWithEffects(textToCopy, social, card);
+                    });
+                }
+                card.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('copy-btn')) {
+                        copyWithEffects(textToCopy, social, card);
+                    }
+                });
+            });
+
+            // Почта
+            const emailCopyBtn = document.getElementById('copyEmailBtn');
+            const emailCardDiv = document.getElementById('emailCard');
+            if (emailCopyBtn) {
+                emailCopyBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    copyEmailFunc();
+                });
+            }
+            if (emailCardDiv) {
+                emailCardDiv.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('copy-email-btn')) {
+                        copyEmailFunc();
+                    }
+                });
+            }
+
+            // Активация аудио контекста после первого касания
+            const enableAudio = () => {
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                document.body.removeEventListener('click', enableAudio);
+                document.body.removeEventListener('touchstart', enableAudio);
+            };
+            document.body.addEventListener('click', enableAudio);
+            document.body.addEventListener('touchstart', enableAudio);
+        })();
     </script>
 </body>
 </html>
