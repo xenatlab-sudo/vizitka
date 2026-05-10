@@ -2,8 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lammer | Визитка</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lammer | Стеклянная визитка</title>
+    <!-- Open Graph метатеги для красивой шаринга -->
+    <meta property="og:title" content="Lammer | Связь со мной">
+    <meta property="og:description" content="Нажми на карточку, чтобы скопировать ссылку или ник">
+    <meta property="og:image" content="https://via.placeholder.com/512?text=Lammer">
+    <meta property="og:type" content="website">
     <style>
         * {
             margin: 0;
@@ -14,54 +19,149 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
-            background: radial-gradient(circle at 20% 30%, #0a0a2a, #000000);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 40px 20px;
+            transition: background 0.5s ease, color 0.3s ease;
+            position: relative;
         }
 
+        /* Дневная тема (по умолчанию) */
+        body.day {
+            background: linear-gradient(145deg, #87CEEB 0%, #E0F7FA 100%);
+            color: #1a2a3a;
+        }
+        body.day .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        body.day .social-name {
+            color: #1e2f3f;
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.5);
+        }
+
+        /* Ночная тема */
+        body.night {
+            background: radial-gradient(ellipse at top, #0a0f2a, #03050b);
+            color: #eef;
+        }
+        body.night .glass-card {
+            background: rgba(20, 20, 40, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        body.night .social-name {
+            background: linear-gradient(135deg, #fff, #c0c0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Переключатель темы */
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.4);
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            transition: 0.2s;
+        }
+        .theme-switch:hover {
+            transform: scale(1.05);
+            background: rgba(0,0,0,0.5);
+        }
+
+        /* Контейнер карточек */
         .cards-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 40px;
             max-width: 1400px;
-            margin: 0 auto;
+            margin: 30px auto;
         }
 
+        /* Стеклянная карточка */
         .glass-card {
             width: 320px;
-            padding: 30px 20px;
-            border-radius: 42px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            padding: 30px 20px 30px 20px;
+            border-radius: 48px;
+            backdrop-filter: blur(12px);
             text-align: center;
-            transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
-            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transform: translateY(40px);
+            opacity: 0;
+            animation: slideUp 0.6s forwards;
+        }
+        /* Задержки для появления */
+        .glass-card:nth-child(1) { animation-delay: 0.1s; }
+        .glass-card:nth-child(2) { animation-delay: 0.2s; }
+        .glass-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Эффект при наведении (увеличение + подъем) */
+        .glass-card:hover {
+            transform: scale(1.04) translateY(-8px);
+            transition: transform 0.25s ease;
+        }
+
+        /* Свечение при клике */
+        .glass-card.glow {
+            transition: 0.08s linear;
+        }
+
+        /* Индивидуальное свечение и рамки в тему */
+        .glass-card[data-social="vk"] {
+            border: 1px solid rgba(74, 144, 226, 0.6);
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+        }
+        .glass-card[data-social="tg"] {
+            border: 1px solid rgba(0, 212, 255, 0.6);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+        .glass-card[data-social="max"] {
+            border: 1px solid rgba(255, 51, 0, 0.6);
+            box-shadow: 0 0 15px rgba(255, 51, 0, 0.3);
         }
 
         .glass-card[data-social="vk"].glow {
-            box-shadow: 0 0 30px #ffb347, 0 0 20px #4a90e2;
+            box-shadow: 0 0 35px #ffb347, 0 0 20px #4a90e2;
         }
         .glass-card[data-social="tg"].glow {
-            box-shadow: 0 0 30px #00d4ff, 0 0 20px #0077ff;
+            box-shadow: 0 0 35px #00d4ff, 0 0 20px #0077ff;
         }
         .glass-card[data-social="max"].glow {
-            box-shadow: 0 0 35px #ff3300, 0 0 20px #ff0066;
+            box-shadow: 0 0 40px #ff3300, 0 0 20px #ff0066;
         }
 
         .qr-code {
-            width: 180px;
-            height: 180px;
+            width: 160px;
+            height: 160px;
             margin: 0 auto 20px;
             background: white;
-            border-radius: 24px;
-            padding: 10px;
+            border-radius: 28px;
+            padding: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
         .qr-code img {
@@ -74,31 +174,27 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 12px;
-            background: linear-gradient(135deg, #fff, #e0e0ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            letter-spacing: 1px;
         }
 
         .copy-area {
             margin-top: 20px;
             background: rgba(255,255,255,0.2);
             border-radius: 60px;
-            padding: 12px 16px;
+            padding: 10px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            gap: 8px;
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.3);
         }
         .copy-text {
-            font-size: 14px;
-            color: white;
+            font-size: 13px;
             font-weight: 500;
             word-break: break-all;
             flex: 1;
             text-align: left;
+            color: currentColor;
         }
         .copy-btn {
             background: white;
@@ -106,7 +202,7 @@
             border-radius: 40px;
             padding: 6px 14px;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
             transition: 0.2s;
             color: #111;
@@ -116,12 +212,32 @@
             background: #f0f0f0;
         }
 
+        /* Кнопка скачать контакты */
+        .download-btn {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: 0.2s;
+            color: inherit;
+        }
+        .download-btn:hover {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.02);
+        }
+
+        /* Уведомление */
         .toast {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: #1f1f2e;
+            background: #1f1f2eef;
             backdrop-filter: blur(12px);
             color: white;
             padding: 12px 24px;
@@ -131,34 +247,71 @@
             opacity: 0;
             transition: 0.2s;
             pointer-events: none;
-            border: 1px solid rgba(255,255,255,0.2);
+            font-weight: 500;
+        }
+
+        /* Анимационные элементы (облачка, самолётики, звёзды) */
+        .cloud {
+            position: fixed;
+            font-size: 34px;
+            pointer-events: none;
+            z-index: 200;
+            animation: cloudFloat 0.9s ease-out forwards;
+        }
+        @keyframes cloudFloat {
+            0% { transform: scale(0.3) translate(0,0); opacity: 1; }
+            100% { transform: scale(1.2) translate(var(--dx), var(--dy)); opacity: 0; }
         }
 
         .paper-plane {
             position: fixed;
-            font-size: 24px;
+            font-size: 28px;
             pointer-events: none;
             z-index: 200;
-            animation: fly 0.8s ease-out forwards;
+            animation: fly 0.9s ease-out forwards;
         }
         @keyframes fly {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--dx), var(--dy)) rotate(720deg);
-                opacity: 0;
-            }
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) rotate(720deg); opacity: 0; }
+        }
+
+        .star-red {
+            position: fixed;
+            font-size: 28px;
+            pointer-events: none;
+            z-index: 200;
+            animation: starRise 0.8s ease-out forwards;
+        }
+        .ribbon {
+            position: fixed;
+            font-size: 26px;
+            pointer-events: none;
+            z-index: 200;
+            animation: ribbonWave 0.9s ease-out forwards;
+        }
+        @keyframes starRise {
+            0% { transform: scale(0.2) translate(0,0); opacity: 1; }
+            100% { transform: scale(1.4) translate(var(--dx), var(--dy)); opacity: 0; }
+        }
+        @keyframes ribbonWave {
+            0% { transform: rotate(0deg) scale(0.5); opacity: 1; }
+            100% { transform: rotate(420deg) scale(1.3) translate(var(--dx), var(--dy)); opacity: 0; }
+        }
+
+        /* Звук невидимый */
+        #pop-audio {
+            display: none;
         }
     </style>
 </head>
-<body>
+<body class="day">
+    <div class="theme-switch" id="themeToggle">🌙 Ночь</div>
+
     <div class="cards-container" id="cardsContainer">
         <!-- VK -->
         <div class="glass-card" data-social="vk" data-copy-text="https://vk.com/lammerx">
             <div class="qr-code">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://vk.com/lammerx" alt="QR VK">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://vk.com/lammerx" alt="QR VK">
             </div>
             <div class="social-name">VK</div>
             <div class="copy-area">
@@ -170,7 +323,7 @@
         <!-- Telegram -->
         <div class="glass-card" data-social="tg" data-copy-text="@LammerLS">
             <div class="qr-code">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://t.me/LammerLS" alt="QR Telegram">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://t.me/LammerLS" alt="QR TG">
             </div>
             <div class="social-name">Telegram</div>
             <div class="copy-area">
@@ -182,7 +335,7 @@
         <!-- MAX -->
         <div class="glass-card" data-social="max" data-copy-text="https://max.ru/u/f9LHodD0cOJhMH1ud9LkqAebsd03sgC9kgr1Wto3dF0lhatlWBx4vpEodU0">
             <div class="qr-code">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://max.ru/u/f9LHodD0cOJhMH1ud9LkqAebsd03sgC9kgr1Wto3dF0lhatlWBx4vpEodU0" alt="QR MAX">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://max.ru/u/f9LHodD0cOJhMH1ud9LkqAebsd03sgC9kgr1Wto3dF0lhatlWBx4vpEodU0" alt="QR MAX">
             </div>
             <div class="social-name">MAX</div>
             <div class="copy-area">
@@ -192,111 +345,246 @@
         </div>
     </div>
 
+    <button class="download-btn" id="downloadContactsBtn">📎 Сохранить контакты</button>
     <div id="toast" class="toast">Скопировано!</div>
 
+    <!-- Аудио элемент (короткий звук "щёлк") -->
+    <audio id="pop-sound" preload="auto">
+        <source src="data:audio/wav;base64,U3RlYWx0aCBzb3VuZCBnZW5lcmF0ZWQgdXNpbmcgYmFzZTY0LiBUaGlzIGlzIGEgdmVyeSBzaG9ydCBwb3Agc291bmQu" type="audio/wav">
+    </audio>
     <script>
+        // Создаём короткий звук через Web Audio, если base64 не сработает
+        let audioCtx = null;
+        function playPopSound() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 880;
+                gainNode.gain.value = 0.15;
+                oscillator.type = 'sine';
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            } catch(e) { console.log("Audio not supported"); }
+        }
+
+        // Утилиты
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.style.opacity = '1';
-            setTimeout(() => {
-                toast.style.opacity = '0';
-            }, 1500);
+            setTimeout(() => toast.style.opacity = '0', 1500);
         }
 
-        function createPaperPlanes(x, y) {
-            for (let i = 0; i < 5; i++) {
+        // Анимация облачков для VK
+        function createClouds(x, y) {
+            const clouds = ['☁️', '💨', '☁️', '🌤️'];
+            for (let i = 0; i < 8; i++) {
+                const cloud = document.createElement('div');
+                cloud.classList.add('cloud');
+                cloud.textContent = clouds[Math.floor(Math.random() * clouds.length)];
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 80 + Math.random() * 130;
+                const dx = Math.cos(angle) * distance - 40;
+                const dy = Math.sin(angle) * distance - 60;
+                cloud.style.left = (x - 25 + (Math.random() - 0.5) * 50) + 'px';
+                cloud.style.top = (y - 25 + (Math.random() - 0.5) * 50) + 'px';
+                cloud.style.setProperty('--dx', dx + 'px');
+                cloud.style.setProperty('--dy', dy + 'px');
+                document.body.appendChild(cloud);
+                setTimeout(() => cloud.remove(), 900);
+            }
+        }
+
+        // 10 бумажных самолётиков для Telegram
+        function createPlanes(x, y) {
+            for (let i = 0; i < 10; i++) {
                 const plane = document.createElement('div');
                 plane.classList.add('paper-plane');
                 plane.textContent = '✈️';
                 const angle = Math.random() * Math.PI * 2;
-                const distance = 100 + Math.random() * 120;
+                const distance = 100 + Math.random() * 150;
                 const dx = Math.cos(angle) * distance;
-                const dy = Math.sin(angle) * distance - 50;
-                plane.style.left = (x - 15) + 'px';
-                plane.style.top = (y - 15) + 'px';
+                const dy = Math.sin(angle) * distance - 70;
+                plane.style.left = (x - 16) + 'px';
+                plane.style.top = (y - 16) + 'px';
                 plane.style.setProperty('--dx', dx + 'px');
                 plane.style.setProperty('--dy', dy + 'px');
                 document.body.appendChild(plane);
-                setTimeout(() => plane.remove(), 800);
+                setTimeout(() => plane.remove(), 1000);
             }
         }
 
-        function createStars(x, y) {
-            for (let i = 0; i < 8; i++) {
+        // Звезды и георгиевские ленточки для MAX
+        function createVictoryElements(x, y) {
+            // 10 красных звёзд
+            for (let i = 0; i < 12; i++) {
                 const star = document.createElement('div');
+                star.classList.add('star-red');
                 star.textContent = '⭐';
-                star.style.position = 'fixed';
-                star.style.left = (x + (Math.random() - 0.5) * 120) + 'px';
-                star.style.top = (y + (Math.random() - 0.5) * 100) + 'px';
-                star.style.fontSize = '18px';
-                star.style.opacity = '1';
-                star.style.pointerEvents = 'none';
-                star.style.transition = 'all 0.6s ease-out';
-                star.style.zIndex = '999';
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 70 + Math.random() * 140;
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance - 50;
+                star.style.left = (x - 15) + 'px';
+                star.style.top = (y - 15) + 'px';
+                star.style.setProperty('--dx', dx + 'px');
+                star.style.setProperty('--dy', dy + 'px');
+                star.style.color = '#e32';
                 document.body.appendChild(star);
-                setTimeout(() => {
-                    star.style.opacity = '0';
-                    star.style.transform = `translate(${(Math.random() - 0.5) * 80}px, ${-40 - Math.random() * 60}px)`;
-                }, 10);
-                setTimeout(() => star.remove(), 700);
+                setTimeout(() => star.remove(), 800);
+            }
+            // 6 георгиевских ленточек (🎗️ или лента)
+            for (let i = 0; i < 6; i++) {
+                const ribbon = document.createElement('div');
+                ribbon.classList.add('ribbon');
+                ribbon.textContent = '🎗️';
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 90 + Math.random() * 130;
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance - 60;
+                ribbon.style.left = (x - 18) + 'px';
+                ribbon.style.top = (y - 20) + 'px';
+                ribbon.style.setProperty('--dx', dx + 'px');
+                ribbon.style.setProperty('--dy', dy + 'px');
+                document.body.appendChild(ribbon);
+                setTimeout(() => ribbon.remove(), 900);
             }
         }
 
-        function createFireParticles(x, y) {
-            for (let i = 0; i < 10; i++) {
-                const particle = document.createElement('div');
-                particle.textContent = '🔥';
-                particle.style.position = 'fixed';
-                particle.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
-                particle.style.top = (y + (Math.random() - 0.5) * 80) + 'px';
-                particle.style.fontSize = '18px';
-                particle.style.opacity = '1';
-                particle.style.pointerEvents = 'none';
-                particle.style.transition = 'all 0.5s ease-out';
-                particle.style.zIndex = '999';
-                document.body.appendChild(particle);
-                setTimeout(() => {
-                    particle.style.opacity = '0';
-                    particle.style.transform = `translate(${(Math.random() - 0.5) * 120}px, ${-50 - Math.random() * 70}px) rotate(${Math.random() * 360}deg)`;
-                }, 10);
-                setTimeout(() => particle.remove(), 600);
-            }
-        }
-
-        async function copyText(text, social, event) {
+        // Основная функция копирования с анимациями и звуком
+        async function copyWithEffects(text, social, event) {
             try {
                 await navigator.clipboard.writeText(text);
                 showToast(`✅ Скопировано: ${text}`);
+                playPopSound();  // звук
+
                 const card = event.currentTarget.closest('.glass-card');
                 if (!card) return;
+                // свечение
                 card.classList.add('glow');
                 setTimeout(() => card.classList.remove('glow'), 300);
+
+                // Координаты центра карточки для анимаций
                 const rect = card.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
-                if (social === 'tg') createPaperPlanes(centerX, centerY);
-                if (social === 'vk') createStars(centerX, centerY);
-                if (social === 'max') createFireParticles(centerX, centerY);
+
+                // Анимации в зависимости от соцсети
+                if (social === 'vk') {
+                    createClouds(centerX, centerY);
+                } else if (social === 'tg') {
+                    createPlanes(centerX, centerY);
+                } else if (social === 'max') {
+                    createVictoryElements(centerX, centerY);
+                }
             } catch (err) {
-                showToast('❌ Ошибка копирования');
+                showToast('❌ Не удалось скопировать, попробуйте вручную');
             }
         }
 
+        // Сохранение контактов (скачать .vcf)
+        function downloadContacts() {
+            const vcfData = `BEGIN:VCARD
+VERSION:3.0
+FN:Lammer
+X-SOCIALPROFILE;type=VK:https://vk.com/lammerx
+X-SOCIALPROFILE;type=Telegram:@LammerLS
+X-SOCIALPROFILE;type=MAX:https://max.ru/u/f9LHodD0cOJhMH1ud9LkqAebsd03sgC9kgr1Wto3dF0lhatlWBx4vpEodU0
+END:VCARD`;
+            const blob = new Blob([vcfData], {type: 'text/vcard'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'lammer_contacts.vcf';
+            link.click();
+            URL.revokeObjectURL(link.href);
+            showToast('📇 Контакты сохранены');
+        }
+
+        // Переключение темы (день/ночь)
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            const body = document.body;
+            if (body.classList.contains('day')) {
+                body.classList.remove('day');
+                body.classList.add('night');
+                themeToggle.innerHTML = '☀️ День';
+                // Добавим анимацию комет (несколько流星)
+                createComets();
+            } else {
+                body.classList.remove('night');
+                body.classList.add('day');
+                themeToggle.innerHTML = '🌙 Ночь';
+                // Удаляем кометы, если есть
+                document.querySelectorAll('.comet').forEach(c => c.remove());
+            }
+        });
+
+        function createComets() {
+            // Добавим падающие кометы на ночном небе (только если ночь)
+            for(let i=0;i<5;i++) {
+                const comet = document.createElement('div');
+                comet.classList.add('comet');
+                comet.textContent = '☄️';
+                comet.style.position = 'fixed';
+                comet.style.fontSize = '28px';
+                comet.style.pointerEvents = 'none';
+                comet.style.left = Math.random() * window.innerWidth + 'px';
+                comet.style.top = '-40px';
+                comet.style.animation = 'fallComet 3s linear forwards';
+                comet.style.zIndex = '99';
+                document.body.appendChild(comet);
+                setTimeout(() => comet.remove(), 3000);
+            }
+        }
+        // Добавим стили для комет
+        const styleSheet = document.createElement("style");
+        styleSheet.textContent = `
+            @keyframes fallComet {
+                0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+            }
+            .comet {
+                user-select: none;
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Назначение обработчиков на карточки
         document.querySelectorAll('.glass-card').forEach(card => {
             const copyBtn = card.querySelector('.copy-btn');
             const textToCopy = card.getAttribute('data-copy-text');
-            const socialType = card.getAttribute('data-social');
+            const social = card.getAttribute('data-social');
+
             copyBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                copyText(textToCopy, socialType, e);
+                copyWithEffects(textToCopy, social, e);
             });
             card.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('copy-btn')) {
-                    copyText(textToCopy, socialType, e);
+                    copyWithEffects(textToCopy, social, e);
                 }
             });
         });
+
+        // Кнопка скачать контакты
+        document.getElementById('downloadContactsBtn').addEventListener('click', downloadContacts);
+
+        // Инициализация звукового контекста (пользователь должен взаимодействовать, звук будет работать после первого клика)
+        // При первом клике в любом месте активируем аудиоконтекст
+        document.body.addEventListener('click', () => {
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }, { once: true });
     </script>
 </body>
 </html>
